@@ -44,7 +44,8 @@ func getProductIDs(searchTerm string) []rawProduct {
 	AND Resource.Value NOT LIKE "%Tray%"
 	AND Resource.Value NOT LIKE "%China%"
 	AND Resource.VALUE NOT LIKE "%Boxed%"
-	AND Product.pkProductID IS NOT NULL;
+	AND Product.pkProductID IS NOT NULL
+	LIMIT 50;
 	`
 	db.Raw(query).Scan(&products)
 	return products
