@@ -102,6 +102,7 @@ func searchHandler(c *gin.Context) {
 	searchTerm := c.Param("search-term")
 	if len(searchTerm) == 0 {
 		c.JSON(http.StatusOK, make([]populatedProduct, 0))
+		return
 	}
 
 	rawProducts := getProductIDs(searchTerm)
