@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -112,6 +113,16 @@ func intFromParams(params *url.Values, key string, defaultValue int) int {
 	return defaultValue
 }
 
+func constrainInt(num int, min int, max int) int {
+	if num < min {
+		return min
+	} else if max < num {
+		return max
+	} else {
+		return num
+	}
+}
+
 func initDB() *gorm.DB {
 	new_db, _ := gorm.Open(sqlite.Open("ark-en.sqlite"), &gorm.Config{})
 	return new_db
@@ -120,8 +131,8 @@ func initDB() *gorm.DB {
 func searchHandler(c *gin.Context) {
 	searchTerm := c.Param("search-term")
 	queryParams := c.Request.URL.Query()
-	firstRecord := intFromParams(&queryParams, "firstRecord", 0)
-	count := intFromParams(&queryParams, "count", 50)
+	firstRecord := constrainInt(intFromParams(&queryParams, "firstRecord", 0), 0, math.MaxInt64)
+	count := constrainInt(intFromParams(&queryParams, "count", 50), 1, 50)
 
 	rawProducts := getProductIDs(searchTerm)
 	populatedProducts := make([]populatedProduct, 0)
