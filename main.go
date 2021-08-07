@@ -129,8 +129,8 @@ func initDB() *gorm.DB {
 }
 
 func searchHandler(c *gin.Context) {
-	searchTerm := c.Param("search-term")
 	queryParams := c.Request.URL.Query()
+	searchTerm := queryParams.Get("query")
 	firstRecord := constrainInt(intFromParams(&queryParams, "firstRecord", 0), 0, math.MaxInt64)
 	count := constrainInt(intFromParams(&queryParams, "count", 50), 1, 50)
 
@@ -155,6 +155,6 @@ func searchHandler(c *gin.Context) {
 func main() {
 	db = initDB()
 	router := gin.Default()
-	router.GET("/search/:search-term", searchHandler)
+	router.GET("/search", searchHandler)
 	router.Run("localhost:8000")
 }
