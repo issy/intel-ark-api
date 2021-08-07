@@ -34,19 +34,19 @@ type populatedProduct struct {
 func getProductIDs(searchTerm string) []rawProduct {
 	var products []rawProduct
 	query := `SELECT
-	Product.ARKID AS ArkID,
-	Product.pkProductID AS ID,
-	Resource.Value AS Title
-	FROM Resource
-	LEFT JOIN Product
-	ON Product.fkProductNameID = Resource.fkResourceID
-	WHERE Resource.Value LIKE "%` + searchTerm + `%"
-	AND Resource.Value NOT LIKE "%Tray%"
-	AND Resource.Value NOT LIKE "%China%"
-	AND Resource.VALUE NOT LIKE "%Boxed%"
-	AND Product.pkProductID IS NOT NULL
-	LIMIT 50;
-	`
+  Product.ARKID AS ArkID,
+  Product.pkProductID AS ID,
+  Resource.Value AS Title
+  FROM Resource
+  LEFT JOIN Product
+  ON Product.fkProductNameID = Resource.fkResourceID
+  WHERE Resource.Value LIKE "%` + searchTerm + `%"
+  AND Resource.Value NOT LIKE "%Tray%"
+  AND Resource.Value NOT LIKE "%China%"
+  AND Resource.VALUE NOT LIKE "%Boxed%"
+  AND Product.pkProductID IS NOT NULL
+  LIMIT 50;
+  `
 	db.Raw(query).Scan(&products)
 	return products
 }
@@ -61,15 +61,15 @@ func convertIDToValue(resourceID int) string {
 func getProductSpecs(product rawProduct) populatedProduct {
 	var rawSpecFields []rawSpecField
 	query := fmt.Sprintf(`
-	SELECT DISTINCT
-	Specification.fkSectionID AS SectionID,
-	Specification.fkNameID AS NameID,
-	Specification.fkValueID AS ValueID
-	FROM Specification
-	LEFT JOIN ProductSpecificationLink
-	ON ProductSpecificationLink.fkProductID = %d
-	WHERE Specification.pkSpecificationID = ProductSpecificationLink.fkSpecificationID;
-	`, product.ID)
+  SELECT DISTINCT
+  Specification.fkSectionID AS SectionID,
+  Specification.fkNameID AS NameID,
+  Specification.fkValueID AS ValueID
+  FROM Specification
+  LEFT JOIN ProductSpecificationLink
+  ON ProductSpecificationLink.fkProductID = %d
+  WHERE Specification.pkSpecificationID = ProductSpecificationLink.fkSpecificationID;
+  `, product.ID)
 	db.Raw(query).Scan(&rawSpecFields)
 
 	var populatedSpecFields [][]string
