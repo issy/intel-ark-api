@@ -1,5 +1,7 @@
 # Intel Ark API
 
+<img src="https://img.shields.io/github/license/issy/intel-ark-api?&color=brightgreen&logo=github"/>
+
 This is a RESTful API for the Intel product index.
 
 NOTE: In order to run this on your own machine, you will need a copy of the Ark sqlite database, which can be extracted from the Ark android app.
