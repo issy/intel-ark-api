@@ -1,4 +1,4 @@
-module example.com/hello
+module issy/intel-ark-api
 
 go 1.16
 
