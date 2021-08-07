@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-
 	"net/http"
+	"net/url"
+	"strconv"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -31,7 +32,17 @@ type populatedProduct struct {
 	Specs [][]string `json:"specs"`
 }
 
+type response struct {
+	TotalRecords int                `json:"totalRecords"`
+	FirstRecord  int                `json:"firstRecord"`
+	Products     []populatedProduct `json:"products"`
+}
+
 func getProductIDs(searchTerm string) []rawProduct {
+	if len(searchTerm) == 0 {
+		return make([]rawProduct, 0)
+	}
+
 	var products []rawProduct
 	query := `SELECT
   Product.ARKID AS ArkID,
@@ -44,8 +55,7 @@ func getProductIDs(searchTerm string) []rawProduct {
   AND Resource.Value NOT LIKE "%Tray%"
   AND Resource.Value NOT LIKE "%China%"
   AND Resource.VALUE NOT LIKE "%Boxed%"
-  AND Product.pkProductID IS NOT NULL
-  LIMIT 50;
+  AND Product.pkProductID IS NOT NULL;
   `
 	db.Raw(query).Scan(&products)
 	return products
@@ -72,7 +82,7 @@ func getProductSpecs(product rawProduct) populatedProduct {
   `, product.ID)
 	db.Raw(query).Scan(&rawSpecFields)
 
-	var populatedSpecFields [][]string
+	populatedSpecFields := make([][]string, 0)
 	for i := 0; i < len(rawSpecFields); i++ {
 		rawSpecRow := rawSpecFields[i]
 		specRow := make([]string, 3)
@@ -93,6 +103,15 @@ func getProductSpecs(product rawProduct) populatedProduct {
 	}
 }
 
+func intFromParams(params *url.Values, key string, defaultValue int) int {
+	if val := params.Get(key); val != "" {
+		if numericVal, err := strconv.Atoi(val); err == nil {
+			return numericVal
+		}
+	}
+	return defaultValue
+}
+
 func initDB() *gorm.DB {
 	new_db, _ := gorm.Open(sqlite.Open("ark-en.sqlite"), &gorm.Config{})
 	return new_db
@@ -100,23 +119,26 @@ func initDB() *gorm.DB {
 
 func searchHandler(c *gin.Context) {
 	searchTerm := c.Param("search-term")
-	if len(searchTerm) == 0 {
-		c.JSON(http.StatusOK, make([]populatedProduct, 0))
-		return
-	}
+	queryParams := c.Request.URL.Query()
+	firstRecord := intFromParams(&queryParams, "firstRecord", 0)
+	count := intFromParams(&queryParams, "count", 50)
 
 	rawProducts := getProductIDs(searchTerm)
-	var populatedProducts []populatedProduct
-	for i := 0; i < len(rawProducts); i++ {
-		stageOneProduct := rawProducts[i]
-		stageThreeProduct := getProductSpecs(stageOneProduct)
-		populatedProducts = append(populatedProducts, stageThreeProduct)
-	}
-	if populatedProducts == nil {
-		populatedProducts = make([]populatedProduct, 0)
+	populatedProducts := make([]populatedProduct, 0)
+	for i := firstRecord; i < len(rawProducts) && i < firstRecord+count; i++ {
+		productMetadata := rawProducts[i]
+		fullProduct := getProductSpecs(productMetadata)
+		populatedProducts = append(populatedProducts, fullProduct)
 	}
 
-	c.JSON(http.StatusOK, populatedProducts)
+	c.JSON(
+		http.StatusOK,
+		response{
+			TotalRecords: len(rawProducts),
+			FirstRecord:  firstRecord,
+			Products:     populatedProducts,
+		},
+	)
 }
 
 func main() {
