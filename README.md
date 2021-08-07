@@ -2,6 +2,8 @@
 
 This is a RESTful API for the Intel product index.
 
+NOTE: In order to run this on your own machine, you will need a copy of the Ark sqlite database, which can be extracted from the Ark android app.
+
 ## Endpoints
 
 ### `GET /search/:search-term`
