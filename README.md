@@ -15,7 +15,7 @@ NOTE: In order to run this on your own machine, you will need a copy of the Ark 
 
   #### `query`
 
-  The product you're searching for
+  The name of the product you're searching for
   ```
   Type: string
   Array: false
