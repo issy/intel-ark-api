@@ -15,30 +15,53 @@ NOTE: In order to run this on your own machine, you will need a copy of the Ark 
 
   ```json
   {
-    "type": "array",
-    "default": [],
-    "items": {
-      "type": "object",
-      "required": [
-        "id",
-        "name",
-        "specs"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "id": {
-          "type": "integer"
-        },
-        "specs": {
-          "type": "array",
-          "items": {
+    "$schema": "http://json-schema.org/schema",
+    "$defs": {
+      "product": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "specs"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "description": "The ID of the product, as represented on the Ark website. This can be used to generate a URL for this product on the Ark website"
+          },
+          "specs": {
             "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Each array within the array contains three string values. The first value is the spec category - the second value is the spec key - and the third value is the spec value",
             "items": {
-              "type": "string"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           }
+        }
+      }
+    },
+    "type": "object",
+    "properties": {
+      "totalRecords": {
+        "type": "integer",
+        "description": "How many records were retrieved by the whole search. Note that the amount of records contained in the products array may be smaller. This value is present for pagination purposes"
+      },
+      "firstRecord": {
+        "type": "integer",
+        "description": "The index of the first record in the products array, relative to the whole search query. This value is present for pagination purposes"
+      },
+      "products": {
+        "type": "array",
+        "default": [],
+        "items": {
+          "$ref": "#/$defs/product"
         }
       }
     }
