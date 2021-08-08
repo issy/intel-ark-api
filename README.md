@@ -60,11 +60,11 @@ NOTE: In order to run this on your own machine, you will need a copy of the Ark 
           },
           "specs": {
             "type": "array",
-            "minItems": 3,
-            "maxItems": 3,
             "description": "Each array within the array contains three string values. The first value is the spec category - the second value is the spec key - and the third value is the spec value",
             "items": {
               "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
               "items": {
                 "type": "string"
               }
