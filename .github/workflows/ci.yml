@@ -32,7 +32,7 @@ jobs:
           go version
           go get -u golang.org/x/lint/golint
           go get
-    - name: Run vet & lint
-        run: |
-          go vet .
-          golint .
+      - name: Run vet & lint
+          run: |
+            go vet .
+            golint .
