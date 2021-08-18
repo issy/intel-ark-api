@@ -19,6 +19,7 @@ jobs:
       - name: Run build
         run: go build .
   lint:
+    needs: build
     runs-on: ubuntu-latest
     steps: 
       - name: Checkout the repository at the current branch
