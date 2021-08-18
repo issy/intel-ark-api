@@ -33,6 +33,6 @@ jobs:
           go get -u golang.org/x/lint/golint
           go get
       - name: Run vet & lint
-          run: |
-            go vet .
-            golint .
+        run: |
+          go vet .
+          golint .
