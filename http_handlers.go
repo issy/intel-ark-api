@@ -70,7 +70,7 @@ func searchHandler(c *gin.Context) {
 
 	totalPages := len(rawProducts) / pageSize
 	if (len(rawProducts) % pageSize) > 0 {
-		totalPages += 1
+		totalPages++
 	}
 	currentPage := constrainInt(intFromParams(&queryParams, "page", 1), 1, totalPages)
 	urlTemplate := fmt.Sprintf("%s?query=%s&page=%s", c.FullPath(), searchTerm, "%d")
